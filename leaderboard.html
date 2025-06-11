@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="quizApp">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Leaderboard</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <script src="header.js"></script>
+    <style>
+        body {
+            background-color: #87CEEB;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            background: #F5F5DC;
+            width: 90%;
+            max-width: 1000px;
+            margin: auto;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(70, 130, 180, 0.3);
+        }
+
+        h1 {
+            color: #4682B4;
+            margin-bottom: 30px;
+            font-size: 2em;
+            text-align: center;
+        }
+
+        .subject-selector {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .subject-btn {
+            background: #4682B4;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+
+        .subject-btn:hover {
+            background: #5A9BD5;
+        }
+
+        .subject-btn.active {
+            background: #2C5282;
+        }
+
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .leaderboard-table th,
+        .leaderboard-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #4682B4;
+        }
+
+        .leaderboard-table th {
+            background-color: #4682B4;
+            color: white;
+            font-weight: 600;
+        }
+
+        .leaderboard-table tr:nth-child(even) {
+            background-color: rgba(70, 130, 180, 0.1);
+        }
+
+        .leaderboard-table tr:hover {
+            background-color: rgba(70, 130, 180, 0.2);
+        }
+
+        .rank {
+            font-weight: bold;
+            color: #4682B4;
+        }
+
+        .top-3 {
+            font-size: 1.2em;
+        }
+
+        .rank-1 {
+            color: gold;
+        }
+
+        .rank-2 {
+            color: silver;
+        }
+
+        .rank-3 {
+            color: #cd7f32;
+        }
+
+        .home-link {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .home-link a {
+            color: #4682B4;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .home-link a:hover {
+            text-decoration: underline;
+        }
+
+        .no-data {
+            text-align: center;
+            color: #666;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body ng-controller="LeaderboardController">
+    <div class="container">
+        <h1>Quiz Leaderboard</h1>
+        
+        <div class="subject-selector">
+            <button class="subject-btn" ng-class="{'active': currentSubject === 'Mathematics'}" ng-click="loadLeaderboard('Mathematics')">Mathematics</button>
+            <button class="subject-btn" ng-class="{'active': currentSubject === 'DSA'}" ng-click="loadLeaderboard('DSA')">DSA</button>
+            <button class="subject-btn" ng-class="{'active': currentSubject === 'DAA'}" ng-click="loadLeaderboard('DAA')">DAA</button>
+            <button class="subject-btn" ng-class="{'active': currentSubject === 'Web Programming'}" ng-click="loadLeaderboard('Web Programming')">Web Programming</button>
+            <button class="subject-btn" ng-class="{'active': currentSubject === 'TCS'}" ng-click="loadLeaderboard('TCS')">TCS</button>
+            <button class="subject-btn" ng-class="{'active': currentSubject === 'DBMS'}" ng-click="loadLeaderboard('DBMS')">DBMS</button>
+        </div>
+
+        <div id="leaderboardContent">
+            <table class="leaderboard-table" ng-if="leaderboardData.length > 0">
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Name</th>
+                        <th>Course</th>
+                        <th>Score</th>
+                        <th>Correct/Total</th>
+                        <th>Attempts</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="entry in leaderboardData" ng-class="{'top-3': $index < 3}">
+                        <td class="rank" ng-class="{'rank-1': $index === 0, 'rank-2': $index === 1, 'rank-3': $index === 2}">
+                            #{{$index + 1}}
+                        </td>
+                        <td>{{entry.username}}</td>
+                        <td>{{entry.course}}</td>
+                        <td>{{entry.average_score}}%</td>
+                        <td>{{entry.total_correct}}/{{entry.total_attempted}}</td>
+                        <td>{{entry.attempts}}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="no-data" ng-if="leaderboardData.length === 0">
+                No data available for this subject yet.
+            </div>
+        </div>
+
+        <div class="home-link">
+            <a href="Home 1.html">Back to Home</a>
+        </div>
+    </div>
+
+    <script>
+        var app = angular.module('quizApp', []);
+
+        app.controller('LeaderboardController', ['$scope', '$http', function($scope, $http) {
+            $scope.currentSubject = 'Mathematics';
+            $scope.leaderboardData = [];
+
+            $scope.loadLeaderboard = function(subject) {
+                $scope.currentSubject = subject;
+                $scope.leaderboardData = [];
+                
+                $http.get('/api/leaderboard/' + subject)
+                    .then(function(response) {
+                        $scope.leaderboardData = response.data;
+                    })
+                    .catch(function(error) {
+                        console.error('Error loading leaderboard:', error);
+                    });
+            };
+
+            // Load initial data
+            $scope.loadLeaderboard('Mathematics');
+        }]);
+    </script>
+</body>
+</html> 

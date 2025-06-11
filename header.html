@@ -1,0 +1,150 @@
+<!-- Header Styles -->
+<style>
+    .header-area {
+        position: relative;
+        margin-bottom: 30px;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+    .header-bg {
+        background: #4682B4;
+        padding: 8px 25px;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        position: relative;
+        z-index: 1;
+    }
+    .nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: relative;
+        gap: 25px;
+    }
+    .logo-container {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 5px;
+    }
+    .logo {
+        width: 45px;
+        height: 45px;
+        object-fit: contain;
+        border-radius: 0;
+        background: transparent;
+    }
+    .logo-text {
+        color: #FFFFFF;
+        font-size: 24px;
+        font-weight: bold;
+        letter-spacing: 0.5px;
+    }
+    .nav-links {
+        display: flex;
+        gap: 25px;
+        flex-wrap: nowrap;
+        align-items: center;
+    }
+    .nav a {
+        color: white;
+        text-decoration: none;
+        font-size: 15px;
+        font-weight: 500;
+        padding: 6px 15px;
+        border-radius: 6px;
+        transition: all 0.2s ease;
+    }
+    .nav a:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+        transform: translateY(-1px);
+    }
+    .user-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 6px 12px;
+        border-radius: 6px;
+        color: white;
+    }
+    .user-avatar {
+        width: 32px;
+        height: 32px;
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 500;
+        font-size: 16px;
+    }
+    .user-name {
+        color: white;
+        font-weight: 500;
+        font-size: 15px;
+    }
+    .nav-user-section {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+    .logout-btn, .login-btn {
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        border: none;
+        padding: 6px 12px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+    .logout-btn:hover, .login-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateY(-1px);
+    }
+    .user-info a {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        text-decoration: none;
+        color: white;
+        padding: 6px 10px;
+        border-radius: 6px;
+        transition: all 0.2s ease;
+    }
+    .user-info a:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+        transform: translateY(-1px);
+    }
+</style>
+
+<!-- Header HTML -->
+<div class="header-area">
+    <div class="header-bg">
+        <div class="nav">
+            <div class="logo-container">
+                <img src="Study material/image.png" alt="Quizzo Logo" class="logo">
+                <span class="logo-text">QUIZZO</span>
+            </div>
+            <div class="nav-links">
+                <a href="Home 1.html">Home</a>
+                <a href="leaderboard.html">Leaderboard</a>
+                <a href="quiz_analysis.html">Analysis</a>
+                <a href="Study material/study_material.html">Study</a>
+                <a href="feedback.html">Feedback</a>
+            </div>
+            <div class="nav-user-section">
+                <div class="user-info" id="userInfoSection">
+                    <a href="profile_2.html">
+                        <div class="user-avatar" id="userAvatar">U</div>
+                        <span class="user-name" id="userName">User</span>
+                    </a>
+                </div>
+                <button id="logoutBtn" class="logout-btn">Logout</button>
+                <button id="loginBtn" class="login-btn">Login</button>
+            </div>
+        </div>
+    </div>
+</div> 

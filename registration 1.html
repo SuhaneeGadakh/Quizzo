@@ -1,0 +1,104 @@
+<html>
+<head>
+<script>
+function validateForm() {
+  let name = document.forms["myForm"]["name"].value;
+  let classValue = document.forms["myForm"]["class"].value;
+  let branch = document.forms["myForm"]["branch"].value;
+  let email = document.forms["myForm"]["email"].value;
+  let phone = document.forms["myForm"]["phone"].value;
+  let errorMessage = '';
+
+  let namePattern = /^[A-Za-z]+$/; 
+  let classPattern = /^[A-Za-z]+$/;
+  let branchPattern = /^[A-Za-z]+$/;
+  let phonePattern = /^[0-9]{10}$/;
+  let emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+
+  if (name == "") {
+    errorMessage += "Name must be filled out.\n";
+  } else if (!namePattern.test(name)) {
+    errorMessage += "Name must contain only letters.\n";
+  }
+
+  if (classValue == "") {
+    errorMessage += "Class must be filled out.\n";
+  } else if (!classPattern.test(classValue)) {
+    errorMessage += "Class must contain only letters.\n";
+  }
+
+  if (branch == "") {
+    errorMessage += "Branch must be filled out.\n";
+  } else if (!branchPattern.test(branch)) {
+    errorMessage += "Branch must contain only letters.\n";
+  }
+
+  if (!emailPattern.test(email)) {
+    errorMessage += "Please enter a valid email.\n";
+  }
+
+  if (!phonePattern.test(phone)) {
+    errorMessage += "Phone Number must contain exactly 10 digits.\n";
+  }
+
+  if (errorMessage != "") {
+    alert(errorMessage);
+    return false;
+  }
+
+  sessionStorage.setItem("registered", "true");
+  window.location.href = "profile.html";
+}
+</script>
+<style>
+  body {
+    background-color: #87CEEB;
+    font-family: Arial, sans-serif;
+    text-align: center;
+  }
+
+  .container {
+    background: #F5F5DC;
+    width: 50%;
+    margin: auto;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 15px #4682B4;
+  }
+
+  input {
+    width: 90%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 2px solid #4682B4;
+    border-radius: 5px;
+  }
+
+  input[type="submit"] {
+    background: #4682B4;
+    color: white;
+    cursor: pointer;
+  }
+
+  h1 {
+    color: #4682B4;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Quiz Registration</h1>
+
+  <form name="myForm" onsubmit="return validateForm()" method="post">
+    Name: <input type="text" name="name"><br><br>
+    Class: <input type="text" name="class"><br><br>
+    Branch: <input type="text" name="branch"><br><br>
+    Email: <input type="text" name="email"><br><br>
+    Phone No: <input type="text" name="phone"><br><br>
+    <input type="submit" value="Register">
+  </form>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="quizApp">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <style>
+        body {
+            background-color: #87CEEB;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: #F5F5DC;
+            width: 90%;
+            max-width: 400px;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(70, 130, 180, 0.3);
+        }
+
+        h1 {
+            color: #4682B4;
+            margin-bottom: 30px;
+            font-size: 2em;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #4682B4;
+            font-weight: 600;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #4682B4;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #5A9BD5;
+        }
+
+        .error-message {
+            color: #ff4444;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .btn {
+            background: #4682B4;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn:hover {
+            background: #5A9BD5;
+        }
+
+        .btn:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+        }
+
+        .links {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .links a {
+            color: #4682B4;
+            text-decoration: none;
+            margin: 0 10px;
+            font-weight: 600;
+        }
+
+        .links a:hover {
+            text-decoration: underline;
+        }
+
+        .ng-dirty.ng-invalid {
+            border-color: #ff4444;
+        }
+
+        .ng-dirty.ng-valid {
+            border-color: #00C851;
+        }
+
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .alert-danger {
+            background-color: #ffebee;
+            color: #c62828;
+            border: 1px solid #ffcdd2;
+        }
+
+        .alert-success {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #c8e6c9;
+        }
+
+        .logo {
+            display: block;
+            margin: 0 auto;
+            max-width: 150px;
+            height: auto;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" ng-controller="LoginController">
+        <img src="Study material/image.png" alt="Quizzo Logo" class="logo">
+        <h1>Login</h1>
+        
+        <div class="alert alert-danger" ng-show="errorMessage" ng-bind="errorMessage"></div>
+        <div class="alert alert-success" ng-show="successMessage" ng-bind="successMessage"></div>
+
+        <form name="loginForm" novalidate ng-submit="login()">
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" 
+                       id="email" 
+                       name="email" 
+                       ng-model="user.email" 
+                       required>
+                <div class="error-message" ng-show="loginForm.email.$dirty && loginForm.email.$error.required">
+                    Email is required
+                </div>
+                <div class="error-message" ng-show="loginForm.email.$dirty && loginForm.email.$error.email">
+                    Please enter a valid email address
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" 
+                       id="password" 
+                       name="password" 
+                       ng-model="user.password" 
+                       required 
+                       ng-minlength="6">
+                <div class="error-message" ng-show="loginForm.password.$dirty && loginForm.password.$error.required">
+                    Password is required
+                </div>
+                <div class="error-message" ng-show="loginForm.password.$dirty && loginForm.password.$error.minlength">
+                    Password must be at least 6 characters long
+                </div>
+            </div>
+
+            <button type="submit" 
+                    class="btn" 
+                    ng-disabled="loginForm.$invalid || loginForm.$pristine || loading">
+                <span ng-if="!loading">Login</span>
+                <span ng-if="loading">Logging in...</span>
+            </button>
+        </form>
+
+        <div class="links">
+            <a href="registration_2.html">Register</a>
+            <a href="Home 1.html">Back to Home</a>
+        </div>
+    </div>
+
+    <script>
+        var app = angular.module('quizApp', []);
+
+        app.controller('LoginController', ['$scope', '$http', '$window', function($scope, $http, $window) {
+            $scope.user = {
+                email: '',
+                password: ''
+            };
+            $scope.loading = false;
+            $scope.errorMessage = '';
+            $scope.successMessage = '';
+            
+            // Get redirect parameter from URL if present
+            function getRedirectUrl() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const redirect = urlParams.get('redirect');
+                return redirect || "Home 1.html";
+            }
+            
+            $scope.login = function() {
+                if ($scope.loginForm.$valid) {
+                    $scope.loading = true;
+                    $scope.errorMessage = '';
+                    $scope.successMessage = '';
+
+                    $http.post('/api/login', $scope.user)
+                        .then(function(response) {
+                            $scope.successMessage = 'Login successful!';
+                            // Store user info in sessionStorage
+                            sessionStorage.setItem("userName", response.data.user.username);
+                            sessionStorage.setItem("userEmail", response.data.user.email);
+                            sessionStorage.setItem("userClass", response.data.user.course);
+                            
+                            // Redirect to appropriate page after a short delay
+                            setTimeout(function() {
+                                $window.location.href = getRedirectUrl();
+                            }, 1000);
+                        })
+                        .catch(function(error) {
+                            $scope.errorMessage = error.data.error || 'An error occurred during login';
+                        })
+                        .finally(function() {
+                            $scope.loading = false;
+                        });
+                }
+            };
+        }]);
+    </script>
+</body>
+</html> 

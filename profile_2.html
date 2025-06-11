@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile & Dashboard</title>
+    <style>
+        body {
+            background-color: #87CEEB;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            flex: 1;
+        }
+
+        /* Header Styles - Consistent with Home page */
+        .header-area {
+            position: relative;
+            margin-bottom: 30px;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .header-bg {
+            background: #4682B4;
+            padding: 8px 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 1;
+        }
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            gap: 25px;
+        }
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 5px;
+        }
+        .logo {
+            width: 45px;
+            height: 45px;
+            object-fit: contain;
+            border-radius: 0;
+            background: transparent;
+        }
+        .logo-text {
+            color: #FFFFFF;
+            font-size: 24px;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+        }
+        .nav-links {
+            display: flex;
+            gap: 25px;
+            flex-wrap: nowrap;
+            align-items: center;
+        }
+        .nav a {
+            color: white;
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 500;
+            padding: 6px 15px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+        .nav a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: translateY(-1px);
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 500;
+            font-size: 16px;
+        }
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+        }
+
+        /* Profile Content Styles */
+        .profile-content {
+            background: #F5F5DC;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(70, 130, 180, 0.3);
+        }
+
+        h2, h3 {
+            color: #4682B4;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            text-align: center;
+        }
+
+        .profile-info {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #F0F8FF;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(70, 130, 180, 0.2);
+        }
+
+        .profile-field {
+            display: flex;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(70, 130, 180, 0.2);
+        }
+
+        .profile-field:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .field-label {
+            width: 120px;
+            font-weight: 600;
+            color: #4682B4;
+        }
+
+        .field-value {
+            flex: 1;
+            color: #333;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .button {
+            padding: 12px 25px;
+            background-color: #4682B4;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .button:hover {
+            background-color: #5A9BD5;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .home-button {
+            background-color: #4682B4;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            background-color: #4682B4;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-right: 20px;
+        }
+
+        .profile-title {
+            text-align: left;
+        }
+
+        .profile-title h2 {
+            margin: 0;
+            text-align: left;
+        }
+
+        .profile-title p {
+            margin: 5px 0 0;
+            color: #666;
+        }
+
+        /* Dashboard Styles */
+        .dashboard {
+            margin-top: 30px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        .dashboard-card {
+            background-color: #F0F8FF;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 8px 15px rgba(70, 130, 180, 0.15);
+            transition: all 0.3s ease;
+            opacity: 0;
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+        
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 20px rgba(70, 130, 180, 0.2);
+        }
+
+        .dashboard-card h3 {
+            color: #4682B4;
+            margin-top: 0;
+            font-size: 1.4em;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 12px;
+            position: relative;
+        }
+        
+        .dashboard-card h3::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(90deg, #4682B4, #5A9BD5);
+        }
+
+        .quiz-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-box {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #4682B4;
+            margin: 5px 0;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .subject-progress {
+            margin-top: 20px;
+        }
+
+        .progress-bar-container {
+            margin-bottom: 15px;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        .progress-bar-outer {
+            height: 12px;
+            background-color: #ddd;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .progress-bar-inner {
+            height: 100%;
+            background-color: #4682B4;
+            border-radius: 6px;
+        }
+
+        .study-materials {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .study-material-item {
+            display: flex;
+            align-items: center;
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: all 0.2s ease;
+        }
+
+        .study-material-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        .study-material-icon {
+            font-size: 2em;
+            margin-right: 15px;
+            color: #4682B4;
+        }
+
+        .study-material-title {
+            flex: 1;
+        }
+
+        .study-material-link {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .empty-message {
+            color: #666;
+            text-align: center;
+            padding: 20px;
+            font-style: italic;
+        }
+
+        /* Responsive styles */
+        @media (max-width: 900px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .quiz-stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .study-materials {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .profile-field {
+                flex-direction: column;
+            }
+            
+            .field-label {
+                width: 100%;
+                margin-bottom: 5px;
+            }
+            
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .profile-avatar {
+                margin-right: 0;
+                margin-bottom: 15px;
+            }
+            
+            .profile-title {
+                text-align: center;
+            }
+            
+            .profile-title h2 {
+                text-align: center;
+            }
+        }
+
+        .quiz-history {
+            margin-top: 30px;
+        }
+        
+        .history-item {
+            display: flex;
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .history-subject {
+            font-weight: bold;
+            width: 120px;
+            color: #4682B4;
+        }
+        
+        .history-details {
+            flex: 1;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .history-score {
+            font-weight: bold;
+        }
+        
+        .history-date {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .attempted-subjects {
+            margin: 15px 0;
+        }
+        
+        .subject-item {
+            padding: 10px 15px;
+            margin: 8px 0;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: all 0.2s ease;
+            font-weight: 500;
+            color: #4682B4;
+            border-left: 3px solid #4682B4;
+        }
+        
+        .subject-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        
+        .section-title {
+            font-weight: bold;
+            margin: 15px 0 10px 0;
+            color: #4682B4;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+        }
+
+        .user-feedback {
+            margin-top: 30px;
+        }
+        
+        .feedback-item {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .feedback-date {
+            font-size: 0.8em;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        
+        .feedback-text {
+            font-style: italic;
+            line-height: 1.4;
+        }
+        
+        .feedback-rating {
+            display: flex;
+            margin-top: 10px;
+        }
+        
+        .feedback-star {
+            color: gold;
+            margin-right: 2px;
+        }
+
+        /* Add animation keyframes */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Consistent Header -->
+        <div class="header-area">
+            <div class="header-bg">
+                <div class="nav">
+                    <div class="logo-container">
+                        <img src="Study material/image.png" alt="Quizzo Logo" class="logo">
+                        <span class="logo-text">QUIZZO</span>
+                    </div>
+                    <div class="nav-links">
+                        <a href="Home 1.html">Home</a>
+                        <a href="leaderboard.html">Leaderboard</a>
+                        <a href="quiz_analysis.html">Analysis</a>
+                        <a href="Study material/study_material.html">Study</a>
+                        <a href="feedback.html">Feedback</a>
+                    </div>
+                    <div class="user-info">
+                        <div class="user-avatar" id="userAvatar">U</div>
+                        <span class="user-name" id="userName">User</span>
+                        <button id="logoutBtn" class="logout-btn" onclick="logout()">Logout</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Content -->
+        <div class="profile-content">
+            <div class="profile-header">
+                <div class="profile-avatar" id="profileAvatar">U</div>
+                <div class="profile-title">
+                    <h2>User Dashboard</h2>
+                    <p id="userName-heading">Welcome back!</p>
+                </div>
+            </div>
+
+            <div class="profile-info">
+                <div class="profile-field">
+                    <div class="field-label">Name:</div>
+                    <div class="field-value" id="userName">Guest</div>
+                </div>
+                <div class="profile-field">
+                    <div class="field-label">Class:</div>
+                    <div class="field-value" id="userClass">Not specified</div>
+                </div>
+                <div class="profile-field">
+                    <div class="field-label">Branch:</div>
+                    <div class="field-value" id="userBranch">Not specified</div>
+                </div>
+                <div class="profile-field">
+                    <div class="field-label">Email:</div>
+                    <div class="field-value" id="userEmail">Not specified</div>
+                </div>
+                <div class="profile-field">
+                    <div class="field-label">Phone:</div>
+                    <div class="field-value" id="userPhone">Not specified</div>
+                </div>
+            </div>
+
+            <div class="dashboard">
+                <div class="dashboard-card">
+                    <h3>Quiz Performance</h3>
+                    <div class="quiz-stats">
+                        <div class="stat-box">
+                            <div class="stat-value" id="totalQuizzes">0</div>
+                            <div class="stat-label">Quizzes Taken</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value" id="averageScore">0%</div>
+                            <div class="stat-label">Average Score</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value" id="bestSubject">-</div>
+                            <div class="stat-label">Best Subject</div>
+                        </div>
+                    </div>
+                    
+                    <h3>Recent Quiz History</h3>
+                    <div id="quizHistoryContainer">
+                        <div class="empty-message">No quiz history available yet.</div>
+                    </div>
+                    
+                    <h3>Your Feedback</h3>
+                    <div id="userFeedbackContainer">
+                        <div class="empty-message">No feedback submitted yet.</div>
+                    </div>
+                </div>
+                
+                <div class="dashboard-card">
+                    <h3>Study Materials</h3>
+                    <div class="study-materials">
+                        <a href="Study material/DSA_study material.pdf" class="study-material-link" target="_blank">
+                            <div class="study-material-item">
+                                <div class="study-material-icon">📊</div>
+                                <div class="study-material-title">Data Structures & Algorithms</div>
+                            </div>
+                        </a>
+                        <a href="Study material/WP_study material.pdf" class="study-material-link" target="_blank">
+                            <div class="study-material-item">
+                                <div class="study-material-icon">🌐</div>
+                                <div class="study-material-title">Web Programming</div>
+                            </div>
+                        </a>
+                        <a href="Study material/DAA_study material.pdf" class="study-material-link" target="_blank">
+                            <div class="study-material-item">
+                                <div class="study-material-icon">⚡</div>
+                                <div class="study-material-title">Design & Analysis of Algorithms</div>
+                            </div>
+                        </a>
+                        <a href="Study material/Math_study material.pdf" class="study-material-link" target="_blank">
+                            <div class="study-material-item">
+                                <div class="study-material-icon">📏</div>
+                                <div class="study-material-title">Mathematics</div>
+                            </div>
+                        </a>
+                        <a href="Study material/DBMS_study material.pdf" class="study-material-link" target="_blank">
+                            <div class="study-material-item">
+                                <div class="study-material-icon">🗃️</div>
+                                <div class="study-material-title">DBMS</div>
+                            </div>
+                        </a>
+                        <a href="Study material/TCS_study material.pdf" class="study-material-link" target="_blank">
+                            <div class="study-material-item">
+                                <div class="study-material-icon">📚</div>
+                                <div class="study-material-title">Theory of Computation</div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="button-container">
+                <a href="Home 1.html" class="button home-button">Back to Home</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const userName = sessionStorage.getItem("userName");
+            if (!userName) {
+                window.location.href = "login.html?redirect=profile_2.html";
+                return;
+            }
+            
+            // Update user info in header and profile
+            document.getElementById("userName").textContent = userName;
+            if (document.getElementById("userAvatar")) {
+                document.getElementById("userAvatar").textContent = userName.charAt(0).toUpperCase();
+            }
+            document.getElementById("userName-heading").textContent = `Welcome back, ${userName}!`;
+            
+            // Update profile information
+            document.querySelectorAll(".field-value#userName").forEach(el => el.textContent = userName);
+            document.getElementById("userClass").textContent = sessionStorage.getItem("userClass") || "Not specified";
+            document.getElementById("userBranch").textContent = sessionStorage.getItem("userBranch") || "CSE";
+            document.getElementById("userEmail").textContent = sessionStorage.getItem("userEmail") || "Not specified";
+            document.getElementById("userPhone").textContent = sessionStorage.getItem("userPhone") || "Not specified";
+            
+            // Update profile avatar
+            document.getElementById("profileAvatar").textContent = userName.charAt(0).toUpperCase();
+            
+            // Add animation to dashboard cards with delay
+            const cards = document.querySelectorAll('.dashboard-card');
+            cards.forEach((card, index) => {
+                card.style.animationDelay = `${index * 0.15}s`;
+            });
+            
+            loadDashboardData();
+            loadUserFeedback();
+        });
+
+        async function loadDashboardData() {
+            try {
+                const userName = sessionStorage.getItem("userName");
+                console.log("Loading dashboard data for user:", userName);
+                
+                const [quizResults, quizAnalysis] = await Promise.all([
+                    fetch(`/api/quiz/results/all?username=${userName}`)
+                        .then(res => {
+                            if (!res.ok) throw new Error(`HTTP error: ${res.status}`);
+                            return res.json();
+                        }),
+                    fetch(`/api/quiz/analysis/${userName}`)
+                        .then(res => {
+                            if (!res.ok) throw new Error(`HTTP error: ${res.status}`);
+                            return res.json();
+                        })
+                ]);
+
+                console.log('Quiz Results:', quizResults); // Debug log
+                console.log('Quiz Analysis:', quizAnalysis); // Debug log
+
+                updateDashboard(quizResults, quizAnalysis);
+            } catch (error) {
+                console.error('Error loading dashboard data:', error);
+                document.getElementById('subjectProgressContainer').innerHTML = 
+                    '<div class="empty-message">Unable to load dashboard data. Please try again later. Error: ' + error.message + '</div>';
+            }
+        }
+
+        function updateDashboard(quizResults, quizAnalysis) {
+            // Update total quizzes
+            const totalQuizzes = quizResults && quizResults.length ? quizResults.length : 0;
+            document.getElementById('totalQuizzes').textContent = totalQuizzes;
+            
+            if (totalQuizzes === 0) {
+                document.getElementById('quizHistoryContainer').innerHTML = 
+                    '<div class="empty-message">No quiz history available yet.</div>';
+                document.getElementById('averageScore').textContent = "0%";
+                document.getElementById('bestSubject').textContent = "-";
+                return;
+            }
+
+            // Calculate average score
+            const totalScore = quizResults.reduce((sum, quiz) => {
+                const score = quiz.correct_answers / quiz.total_questions * 100;
+                return sum + score;
+            }, 0);
+            const averageScore = (totalScore / totalQuizzes).toFixed(1);
+            document.getElementById('averageScore').textContent = `${averageScore}%`;
+            
+            // Find best subject
+            const subjectScores = {};
+            quizResults.forEach(quiz => {
+                if (!subjectScores[quiz.subject]) {
+                    subjectScores[quiz.subject] = {
+                        totalScore: 0,
+                        count: 0
+                    };
+                }
+                subjectScores[quiz.subject].totalScore += (quiz.correct_answers / quiz.total_questions * 100);
+                subjectScores[quiz.subject].count += 1;
+            });
+            
+            let bestSubject = '';
+            let bestScore = 0;
+            
+            for (const subject in subjectScores) {
+                const avgSubjectScore = subjectScores[subject].totalScore / subjectScores[subject].count;
+                if (avgSubjectScore > bestScore) {
+                    bestScore = avgSubjectScore;
+                    bestSubject = subject;
+                }
+            }
+            
+            document.getElementById('bestSubject').textContent = bestSubject || '-';
+            
+            // Update quiz history - show all attempted subjects
+            const quizHistoryContainer = document.getElementById('quizHistoryContainer');
+            quizHistoryContainer.innerHTML = '';
+            
+            // Get all unique subjects that have been attempted
+            const attemptedSubjects = [...new Set(quizResults.map(quiz => quiz.subject))];
+            
+            if (attemptedSubjects.length === 0) {
+                quizHistoryContainer.innerHTML = '<div class="empty-message">No quiz history available yet.</div>';
+                return;
+            }
+            
+            // Create a list of all attempted subjects
+            const subjectList = document.createElement('div');
+            subjectList.className = 'attempted-subjects';
+            
+            const subjectTitle = document.createElement('div');
+            subjectTitle.className = 'section-title';
+            subjectTitle.textContent = 'Subjects Attempted:';
+            subjectList.appendChild(subjectTitle);
+            
+            attemptedSubjects.forEach(subject => {
+                const subjectItem = document.createElement('div');
+                subjectItem.className = 'subject-item';
+                subjectItem.textContent = subject;
+                subjectList.appendChild(subjectItem);
+            });
+            
+            quizHistoryContainer.appendChild(subjectList);
+            
+            // Show the 5 most recent quizzes
+            const recentQuizzesTitle = document.createElement('div');
+            recentQuizzesTitle.className = 'section-title';
+            recentQuizzesTitle.textContent = 'Recent Attempts:';
+            quizHistoryContainer.appendChild(recentQuizzesTitle);
+            
+            // Sort quizzes by date (newest first)
+            const sortedQuizzes = [...quizResults].sort((a, b) => {
+                const dateA = new Date(a.created_at || a.date_taken || 0);
+                const dateB = new Date(b.created_at || b.date_taken || 0);
+                return dateB - dateA;
+            });
+            
+            // Show only the 5 most recent quizzes
+            const recentQuizzes = sortedQuizzes.slice(0, 5);
+            
+            recentQuizzes.forEach(quiz => {
+                try {
+                    const date = new Date(quiz.created_at || quiz.date_taken || new Date());
+                    const formattedDate = date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                    const correctAnswers = parseInt(quiz.correct_answers) || 0;
+                    const totalQuestions = parseInt(quiz.total_questions) || 1;
+                    const score = ((correctAnswers / totalQuestions) * 100).toFixed(1);
+                    
+                    const historyItemHtml = `
+                        <div class="history-item">
+                            <div class="history-subject">${quiz.subject}</div>
+                            <div class="history-details">
+                                <span class="history-score">${score}%</span>
+                                <span class="history-date">${formattedDate}</span>
+                            </div>
+                        </div>
+                    `;
+                    
+                    quizHistoryContainer.innerHTML += historyItemHtml;
+                } catch (error) {
+                    console.error('Error formatting quiz result:', error, quiz);
+                }
+            });
+        }
+
+        function logout() {
+            sessionStorage.clear();
+            window.location.href = "login.html";
+        }
+
+        function loadUserFeedback() {
+            const userName = sessionStorage.getItem("userName");
+            fetch(`/api/feedback/${userName}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    updateFeedbackSection(data);
+                })
+                .catch(error => {
+                    console.error('Error fetching feedback:', error);
+                    document.getElementById('userFeedbackContainer').innerHTML = 
+                        '<div class="empty-message">Unable to load feedback. Please try again later.</div>';
+                });
+        }
+
+        function updateFeedbackSection(feedbackData) {
+            const feedbackContainer = document.getElementById('userFeedbackContainer');
+            
+            if (!feedbackData || feedbackData.length === 0) {
+                feedbackContainer.innerHTML = '<div class="empty-message">No feedback submitted yet.</div>';
+                return;
+            }
+            
+            feedbackContainer.innerHTML = '';
+            
+            feedbackData.forEach(feedback => {
+                const date = new Date(feedback.date_submitted || feedback.date || new Date());
+                const formattedDate = date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                
+                // Generate stars based on rating
+                let stars = '';
+                for (let i = 0; i < feedback.rating; i++) {
+                    stars += '<span class="feedback-star">★</span>';
+                }
+                
+                const feedbackItemHtml = `
+                    <div class="feedback-item">
+                        <div class="feedback-date">${formattedDate}</div>
+                        <div class="feedback-text">"${feedback.comment}"</div>
+                        <div class="feedback-rating">${stars}</div>
+                    </div>
+                `;
+                
+                feedbackContainer.innerHTML += feedbackItemHtml;
+            });
+        }
+    </script>
+</body>
+</html>

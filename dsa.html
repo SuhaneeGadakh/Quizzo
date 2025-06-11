@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Structures & Algorithms Quiz</title>
+    <script src="header.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center;
+            background-color: #87CEEB; /* Sky Blue */
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        .quiz-container {
+            background: #F5F5DC; /* Beige */
+            width: 80%;
+            max-width: 800px;
+            margin: auto;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(70, 130, 180, 0.3);
+            text-align: left;
+        }
+        .button {
+            background-color: #4682B4; /* Steel Blue */
+            color: white;
+            padding: 12px 20px;
+            text-decoration: none;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            display: inline-block;
+            margin: 10px 5px;
+            font-size: 16px;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+        .button:hover {
+            background-color: #5A9BD5;
+        }
+        .options button {
+            text-align: left;
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: 2px solid #4682B4;
+            border-radius: 8px;
+            cursor: pointer;
+            background: white;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        .options button:hover {
+            background-color: #f0f0f0;
+        }
+        .correct {
+            background-color: #9aeabc !important;
+        }
+        .incorrect {
+            background-color: #ff9393 !important;
+        }
+        .timer {
+            background-color: #4682B4;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            display: inline-block;
+            margin-bottom: 20px;
+            font-weight: 600;
+            font-size: 18px;
+        }
+        .timer.warning {
+            background-color: #ff9800;
+        }
+        .timer.danger {
+            background-color: #f44336;
+        }
+        h2 {
+            color: #4682B4;
+            margin-bottom: 20px;
+        }
+        #question {
+            font-size: 18px;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+        .result-container {
+            text-align: center;
+        }
+        .result-container h2 {
+            color: #4682B4;
+            margin-bottom: 20px;
+        }
+        .result-container p {
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+        .result-container .button {
+            margin: 10px;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background-color: #f0f0f0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        .progress-fill {
+            height: 100%;
+            background-color: #4682B4;
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+        @media (max-width: 768px) {
+            .quiz-container {
+                width: 95%;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="quiz-container" id="quiz-container">
+            <h2>Data Structures & Algorithms Quiz</h2>
+            <div class="timer" id="timer">60</div>
+            <p id="question"></p>
+            <div class="options" id="options"></div>
+            <button id="next-btn" class="button" onclick="nextQuestion()" disabled>Next</button>
+        </div>
+    </div>
+    
+    <script>
+        let currentQuestionIndex = 0;
+        let correctCount = 0;
+        let wrongCount = 0;
+        let answered = false;
+        let timeLeft = 60; // 1 minute in seconds
+        let timerInterval;
+        let startTime;
+
+        const questions = [
+            { question: "1) Which of the following is a linear data structure?", answers: ["Array", "Graph", "Tree", "Hash Table"], correct: 0 },
+            { question: "2) Which data structure is used in depth-first search (DFS)?", answers: ["Stack", "Queue", "Array", "Linked List"], correct: 0 },
+            { question: "3) What is the time complexity of binary search?", answers: ["O(n)", "O(log n)", "O(n^2)", "O(1)"], correct: 1 },
+            { question: "4) Which of the following is a type of balanced tree?", answers: ["Red-Black Tree", "Binary Search Tree", "Heap", "AVL Tree"], correct: 0 },
+            { question: "5) Which algorithm is used to find the shortest path in a graph?", answers: ["Dijkstra's Algorithm", "Floyd-Warshall", "Bellman-Ford", "Prim's Algorithm"], correct: 0 },
+            { question: "6) What is the worst-case time complexity of quicksort?", answers: ["O(n log n)", "O(n^2)", "O(log n)", "O(n)"], correct: 1 },
+            { question: "7) In a linked list, what does the 'next' pointer of the last node point to?", answers: ["Null", "First Node", "Previous Node", "End Node"], correct: 0 },
+            { question: "8) Which data structure is most efficient for implementing a priority queue?", answers: ["Stack", "Queue", "Binary Heap", "Linked List"], correct: 2 },
+            { question: "9) Which of the following is not a sorting algorithm?", answers: ["Bubble Sort", "Merge Sort", "Quick Sort", "Linear Search"], correct: 3 },
+            { question: "10) In which case does the merge sort algorithm have its worst time complexity?", answers: ["O(n)", "O(n log n)", "O(n^2)", "O(log n)"], correct: 1 }
+        ];
+
+        function startTimer() {
+            startTime = new Date();
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+
+        function updateTimer() {
+            timeLeft--;
+            const timerElement = document.getElementById("timer");
+            timerElement.textContent = timeLeft;
+            
+            // Change color based on time left
+            if (timeLeft <= 10) {
+                timerElement.classList.add("danger");
+            } else if (timeLeft <= 20) {
+                timerElement.classList.add("warning");
+            }
+            
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                endQuiz();
+            }
+        }
+
+        function loadQuestion() {
+            if (currentQuestionIndex >= questions.length) {
+                endQuiz();
+                return;
+            }
+            
+            answered = false;
+            document.getElementById("next-btn").disabled = true;
+
+            const q = questions[currentQuestionIndex];
+            document.getElementById("question").innerText = q.question;
+            const optionsContainer = document.getElementById("options");
+            optionsContainer.innerHTML = "";
+
+            q.answers.forEach((answer, index) => {
+                const button = document.createElement("button");
+                button.innerText = answer;
+                button.onclick = () => checkAnswer(button, index);
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function checkAnswer(button, option) {
+            if (answered) return;
+
+            answered = true;
+            const correctOption = questions[currentQuestionIndex].correct;
+
+            if (option === correctOption) {
+                button.classList.add("correct");
+                correctCount++;
+            } else {
+                button.classList.add("incorrect");
+                wrongCount++;
+            }
+            
+            document.getElementById("next-btn").disabled = false;
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            loadQuestion();
+        }
+
+        function endQuiz() {
+            clearInterval(timerInterval);
+            const endTime = new Date();
+            const timeTaken = Math.floor((endTime - startTime) / 1000);
+            
+            // Save quiz results to database
+            saveQuizResults("DSA", correctCount, wrongCount, timeTaken);
+            
+            document.getElementById("quiz-container").innerHTML = `
+                <div class="result-container">
+                    <h2>Quiz Completed!</h2>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${(correctCount / questions.length) * 100}%"></div>
+                    </div>
+                    <p>Correct Answers: ${correctCount}</p>
+                    <p>Wrong Answers: ${wrongCount}</p>
+                    <p>Total Questions Attempted: ${correctCount + wrongCount}</p>
+                    <p>Time Taken: ${timeTaken} seconds</p>
+                    <button class='button' onclick='restartQuiz()'>Restart Quiz</button>
+                    <button class='button' onclick='goHome()'>Home</button>
+                    <a href="Study material/DSA_study material.pdf" class="button" target="_blank">Study Material</a>
+                    <a href="profile_2.html" class="button">View Profile & Progress</a>
+                    <a href="quiz_analysis.html" class="button">View Analysis</a>
+                </div>`;
+        }
+
+        function saveQuizResults(subject, correct, wrong, timeTaken) {
+            const totalQuestions = questions.length;
+            const score = Math.round((correct / totalQuestions) * 100);
+            const username = sessionStorage.getItem("userName");
+
+            if (!username) {
+                console.error("User not logged in. Cannot save results.");
+                return;
+            }
+
+            console.log("Saving quiz results for:", username, subject);
+
+            // Save to server
+            fetch('/api/quiz/results', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    username: username,
+                    subject: subject.toUpperCase(),
+                    score: score,
+                    totalQuestions: totalQuestions,
+                    correctAnswers: correct
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => Promise.reject(err));
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Quiz results saved successfully:', data);
+            })
+            .catch(error => {
+                console.error('Error saving quiz results:', error);
+                alert('Failed to save quiz results. Please try again.');
+            });
+
+            // Also save to session storage for local reference
+            const attemptsKey = `${subject}_attempts`;
+            let attempts = JSON.parse(sessionStorage.getItem(attemptsKey) || '[]');
+            
+            // Add new attempt
+            attempts.unshift({
+                date: new Date().toLocaleDateString(),
+                score: score,
+                totalQuestions: totalQuestions,
+                timeTaken: timeTaken,
+                correctAnswers: correct,
+                wrongAnswers: wrong
+            });
+            
+            // Keep only the last 10 attempts
+            if (attempts.length > 10) {
+                attempts = attempts.slice(0, 10);
+            }
+            
+            // Save to sessionStorage
+            sessionStorage.setItem(attemptsKey, JSON.stringify(attempts));
+        }
+
+        function restartQuiz() {
+            currentQuestionIndex = 0;
+            correctCount = 0;
+            wrongCount = 0;
+            timeLeft = 60;
+            loadQuestion();
+            startTimer();
+        }
+
+        function goHome() {
+            window.location.href = 'Home 1.html';
+        }
+
+        // Check if user is logged in
+        window.onload = function() {
+            const userName = sessionStorage.getItem("userName");
+            
+            // Set up quiz container with start button for guests
+            if (!userName) {
+                document.getElementById("quiz-container").innerHTML = `
+                    <h2>Data Structures & Algorithms Quiz</h2>
+                    <p>You need to be logged in to take this quiz.</p>
+                    <p>This quiz consists of 10 questions about Data Structures & Algorithms.</p>
+                    <p>You'll have 60 seconds to complete the quiz.</p>
+                    <button class='button' onclick='window.location.href="login.html"'>Login to Start</button>
+                    <button class='button' onclick='window.location.href="Home 1.html"'>Back to Home</button>
+                    <a href="Study material/DSA_study material.pdf" class="button" target="_blank">Study Material</a>
+                `;
+                return;
+            }
+            
+            // User is logged in, start the quiz
+            loadQuestion();
+            startTimer();
+        };
+    </script>
+</body>
+</html>

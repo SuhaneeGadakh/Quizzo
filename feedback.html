@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback</title>
+    <!-- Include header script -->
+    <script src="header.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #87CEEB;
+        }
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+
+        .container {
+            background: #F5F5DC;
+            width: 90%;
+            max-width: 600px;
+            margin: auto;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(70, 130, 180, 0.3);
+        }
+
+        h1 {
+            color: #4682B4;
+            margin-bottom: 30px;
+            font-size: 2em;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #4682B4;
+            font-weight: 600;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: 2px solid #4682B4;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #5A9BD5;
+            box-shadow: 0 0 5px rgba(70, 130, 180, 0.3);
+        }
+
+        .submit-btn {
+            background: #4682B4;
+            color: white;
+            padding: 14px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .submit-btn:hover {
+            background: #5A9BD5;
+        }
+
+        .rating-group {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+        }
+
+        .rating-option {
+            text-align: center;
+            flex: 1;
+            margin: 0 5px;
+        }
+
+        .rating-option input[type="radio"] {
+            display: none;
+        }
+
+        .rating-option label {
+            display: block;
+            padding: 10px;
+            border: 2px solid #4682B4;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .rating-option input[type="radio"]:checked + label {
+            background: #4682B4;
+            color: white;
+        }
+
+        .home-link {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .home-link a {
+            color: #4682B4;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .home-link a:hover {
+            text-decoration: underline;
+        }
+
+        .error-message {
+            color: #ff4444;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Quiz Feedback</h1>
+        <form name="feedbackForm" onsubmit="return submitFeedback()" method="post">
+            <div class="form-group">
+                <label for="subject">Subject</label>
+                <select id="subject" name="subject" required>
+                    <option value="">Select a subject</option>
+                    <option value="maths">Mathematics</option>
+                    <option value="dsa">Data Structures and Algorithms</option>
+                    <option value="daa">Design and Analysis of Algorithms</option>
+                    <option value="wp">Web Programming</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Difficulty Level</label>
+                <div class="rating-group">
+                    <div class="rating-option">
+                        <input type="radio" id="difficulty1" name="difficulty" value="1" required>
+                        <label for="difficulty1">Too Easy</label>
+                    </div>
+                    <div class="rating-option">
+                        <input type="radio" id="difficulty2" name="difficulty" value="2">
+                        <label for="difficulty2">Easy</label>
+                    </div>
+                    <div class="rating-option">
+                        <input type="radio" id="difficulty3" name="difficulty" value="3">
+                        <label for="difficulty3">Moderate</label>
+                    </div>
+                    <div class="rating-option">
+                        <input type="radio" id="difficulty4" name="difficulty" value="4">
+                        <label for="difficulty4">Hard</label>
+                    </div>
+                    <div class="rating-option">
+                        <input type="radio" id="difficulty5" name="difficulty" value="5">
+                        <label for="difficulty5">Too Hard</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="feedback">Your Feedback</label>
+                <textarea id="feedback" name="feedback" placeholder="Please share your thoughts about the quiz..." required></textarea>
+            </div>
+
+            <button type="submit" class="submit-btn">Submit Feedback</button>
+        </form>
+        <div class="home-link">
+            <a href="Home 1.html">Back to Home</a>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const userName = sessionStorage.getItem("userName");
+            if (!userName) {
+                window.location.href = "login.html?redirect=feedback.html";
+                return;
+            }
+            loadPreviousFeedback();
+        });
+
+        function submitFeedback() {
+            const subject = document.getElementById('subject').value;
+            const difficulty = document.querySelector('input[name="difficulty"]:checked');
+            const feedback = document.getElementById('feedback').value;
+
+            if (!subject || !difficulty || !feedback) {
+                alert('Please fill in all fields');
+                return false;
+            }
+
+            const username = sessionStorage.getItem("userName");
+            if (!username) {
+                alert('You must be logged in to submit feedback');
+                window.location.href = "login.html?redirect=feedback.html";
+                return false;
+            }
+
+            // Get user ID from username
+            fetch(`/api/users/id?username=${username}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to get user information');
+                    }
+                    return response.json();
+                })
+                .then(userData => {
+                    // Prepare feedback data
+                    const feedbackData = {
+                        userId: userData.id,
+                        rating: parseInt(difficulty.value),
+                        comment: `${subject}: ${feedback}`
+                    };
+
+                    // Send feedback to server
+                    return fetch('/api/feedback', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(feedbackData)
+                    });
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(err => Promise.reject(err));
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Feedback submitted successfully:', data);
+                    alert('Thank you for your feedback! You can view it in your profile.');
+                    loadPreviousFeedback();
+                    document.getElementById('feedbackForm').reset();
+                })
+                .catch(error => {
+                    console.error('Error submitting feedback:', error);
+                    
+                    // Fallback to sessionStorage if API fails
+                    const localFeedbackData = {
+                        subject: subject,
+                        difficulty: difficulty.value,
+                        feedback: feedback,
+                        timestamp: new Date().toISOString(),
+                        user: username || "Anonymous"
+                    };
+
+                    // Get existing feedback or initialize empty array
+                    let allFeedback = JSON.parse(sessionStorage.getItem("quizFeedback") || "[]");
+                    allFeedback.push(localFeedbackData);
+                    sessionStorage.setItem("quizFeedback", JSON.stringify(allFeedback));
+
+                    alert('Feedback saved locally. You can view your profile to see it.');
+                    loadPreviousFeedback();
+                });
+
+            return false;
+        }
+
+        function loadPreviousFeedback() {
+            const userName = sessionStorage.getItem("userName");
+            fetch(`/api/feedback/${userName}`)
+                .then(response => {
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    return response.json();
+                })
+                .then(data => {
+                    displayFeedback(data);
+                })
+                .catch(error => {
+                    console.error('Error loading feedback:', error);
+                    document.getElementById('previous-feedback').innerHTML = 
+                        '<div class="error-message">Unable to load previous feedback. Please try again later.</div>';
+                });
+        }
+    </script>
+</body>
+</html> 

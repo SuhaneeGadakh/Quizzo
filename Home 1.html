@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quizzo - Learning Platform</title>
+    <script src="header.js"></script>
+    <style>
+        body {
+            background-color: #87CEEB; /* Sky Blue */
+            color: #333;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .header-area {
+            position: relative;
+            margin-bottom: 30px;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .header-bg {
+            background: #4682B4;
+            padding: 8px 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 1;
+        }
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            gap: 25px;
+        }
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 5px;
+        }
+        .logo {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+            border-radius: 0;
+            background: transparent;
+        }
+        .logo-text {
+            color: #FFFFFF;
+            font-size: 24px;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+        }
+        .nav-links {
+            display: flex;
+            gap: 25px;
+            flex-wrap: nowrap;
+            align-items: center;
+        }
+        .nav a {
+            color: white;
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 500;
+            padding: 6px 15px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+        .nav a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: translateY(-1.5px);
+        }
+        .search {
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            width: 180px;
+            font-size: 14px;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            transition: all 0.2s ease;
+        }
+        .search::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        .search:focus {
+            outline: none;
+            background-color: rgba(255, 255, 255, 0.2);
+            width: 200px;
+        }
+        .welcome-section {
+            text-align: center;
+            margin-bottom: 50px;
+            animation: fadeIn 1s ease-in-out;
+        }
+        .welcome-section h2 {
+            color: #4682B4;
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        .welcome-section p {
+            font-size: 1.2em;
+            color: #555;
+            max-width: 800px;
+            margin: 0 auto 20px;
+            line-height: 1.5;
+        }
+        .subjects {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin: 0 auto 50px;
+            width: 100%;
+            max-width: 1100px;
+        }
+        .subject-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: #F5F5DC;
+            color: #333;
+            padding: 30px 20px;
+            border-radius: 16px;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: 600;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            height: 170px;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        .subject-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, #4682B4, #5A9BD5);
+            z-index: -1;
+            transition: height 0.3s ease;
+        }
+        .subject-btn:hover {
+            background-color: #FFFFFF;
+            color: #4682B4;
+            transform: translateY(-8px);
+            box-shadow: 0 15px 20px rgba(0, 0, 0, 0.15);
+        }
+        .subject-btn:hover::before {
+            height: 100%;
+            background: linear-gradient(135deg, rgba(70, 130, 180, 0.1), rgba(90, 155, 213, 0.2));
+        }
+        .subject-btn:hover .subject-icon {
+            transform: scale(1.1);
+            color: #4682B4;
+        }
+        .subject-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+        .contact-section {
+            text-align: center;
+            margin-bottom: 40px;
+            background-color: rgba(255, 255, 255, 0.3);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+        .contact-section h3 {
+            color: #4682B4;
+            font-size: 1.6em;
+            margin-bottom: 15px;
+        }
+        .contact-section p {
+            font-size: 1.1em;
+            color: #555;
+            line-height: 1.5;
+        }
+        .footer {
+            background: linear-gradient(135deg, #4682B4, #5A9BD5);
+            color: white;
+            padding: 18px;
+            border-radius: 12px;
+            text-align: center;
+            margin-top: auto;
+            box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.1);
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 500;
+            font-size: 16px;
+            transition: all 0.2s ease;
+        }
+        .user-avatar:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+        .user-name {
+            color: white;
+            font-weight: 600;
+            font-size: 16px;
+        }
+        .logout-btn, .login-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        .logout-btn:hover, .login-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @media (max-width: 768px) {
+            .nav {
+                flex-direction: column;
+                gap: 15px;
+                padding: 20px;
+            }
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            .search {
+                width: 90%;
+            }
+            .subjects {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            .welcome-section h2 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="welcome-section">
+            <h2>Welcome to Quizzo Learning Platform</h2>
+            <p>Select a subject to start learning and test your knowledge:</p>
+        </div>
+        
+        <div class="subjects">
+            <a href="dsa.html" class="subject-btn">
+                <div class="subject-icon">📊</div>
+                Data Structures & Algorithms
+            </a>
+            <a href="WP_1.html" class="subject-btn">
+                <div class="subject-icon">🌐</div>
+                Web Programming
+            </a>
+            <a href="DAA_1.html" class="subject-btn">
+                <div class="subject-icon">⚡</div>
+                Design & Analysis of Algorithms
+            </a>
+            <a href="Maths_1.html" class="subject-btn">
+                <div class="subject-icon">🔢</div>
+                Mathematics
+            </a>
+            <a href="tcs.html" class="subject-btn">
+                <div class="subject-icon">📘</div>
+                Theoretical Computer Science
+            </a>
+            <a href="dbms.html" class="subject-btn">
+                <div class="subject-icon">🗄️</div>
+                Database Management Systems
+            </a>
+        </div>
+        
+        <div class="contact-section">
+            <h3>Contact Us</h3>
+            <p>Email: support@quizzo.com | Phone: +1234567890</p>
+        </div>
+        
+        <div class="footer">
+            <p>&copy; 2025 Quizzo Learning Platform. All Rights Reserved.</p>
+        </div>
+    </div>
+
+    <script>
+        // Additional script to ensure login/logout functionality works
+        document.addEventListener('DOMContentLoaded', function() {
+            // This is a fallback in case the header.js functions aren't working
+            const loginBtn = document.getElementById('loginBtn');
+            if (loginBtn) {
+                loginBtn.addEventListener('click', function() {
+                    window.location.href = 'login.html';
+                });
+            }
+        });
+    </script>
+</body>
+</html>

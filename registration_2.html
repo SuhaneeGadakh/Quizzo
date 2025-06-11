@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="quizApp">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <style>
+        body {
+            background-color: #87CEEB;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: #F5F5DC;
+            width: 90%;
+            max-width: 500px;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(70, 130, 180, 0.3);
+        }
+
+        h1 {
+            color: #4682B4;
+            margin-bottom: 30px;
+            font-size: 2em;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #4682B4;
+            font-weight: 600;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #4682B4;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #5A9BD5;
+        }
+
+        .error-message {
+            color: #ff4444;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .btn {
+            background: #4682B4;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn:hover {
+            background: #5A9BD5;
+        }
+
+        .btn:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+        }
+
+        .links {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .links a {
+            color: #4682B4;
+            text-decoration: none;
+            margin: 0 10px;
+            font-weight: 600;
+        }
+
+        .links a:hover {
+            text-decoration: underline;
+        }
+
+        .ng-dirty.ng-invalid {
+            border-color: #ff4444;
+        }
+
+        .ng-dirty.ng-valid {
+            border-color: #00C851;
+        }
+
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .alert-danger {
+            background-color: #ffebee;
+            color: #c62828;
+            border: 1px solid #ffcdd2;
+        }
+
+        .alert-success {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #c8e6c9;
+        }
+
+        .logo {
+            width: 100%;
+            max-width: 200px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" ng-controller="RegistrationController">
+        <img src="Study material/image.png" alt="Quizzo Logo" class="logo">
+        <h1>Registration</h1>
+        
+        <div class="alert alert-danger" ng-show="errorMessage" ng-bind="errorMessage"></div>
+        <div class="alert alert-success" ng-show="successMessage" ng-bind="successMessage"></div>
+
+        <form name="registrationForm" novalidate ng-submit="register()">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" 
+                       id="username" 
+                       name="username" 
+                       ng-model="user.username" 
+                       required 
+                       ng-minlength="3"
+                       ng-maxlength="20">
+                <div class="error-message" ng-show="registrationForm.username.$dirty && registrationForm.username.$error.required">
+                    Username is required
+                </div>
+                <div class="error-message" ng-show="registrationForm.username.$dirty && registrationForm.username.$error.minlength">
+                    Username must be at least 3 characters long
+                </div>
+                <div class="error-message" ng-show="registrationForm.username.$dirty && registrationForm.username.$error.maxlength">
+                    Username cannot be longer than 20 characters
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" 
+                       id="email" 
+                       name="email" 
+                       ng-model="user.email" 
+                       required>
+                <div class="error-message" ng-show="registrationForm.email.$dirty && registrationForm.email.$error.required">
+                    Email is required
+                </div>
+                <div class="error-message" ng-show="registrationForm.email.$dirty && registrationForm.email.$error.email">
+                    Please enter a valid email address
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" 
+                       id="password" 
+                       name="password" 
+                       ng-model="user.password" 
+                       required 
+                       ng-minlength="6">
+                <div class="error-message" ng-show="registrationForm.password.$dirty && registrationForm.password.$error.required">
+                    Password is required
+                </div>
+                <div class="error-message" ng-show="registrationForm.password.$dirty && registrationForm.password.$error.minlength">
+                    Password must be at least 6 characters long
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="course">Course</label>
+                <input type="text" 
+                       id="course" 
+                       name="course" 
+                       ng-model="user.course" 
+                       required 
+                       ng-pattern="/^[A-Za-z0-9\s\.]{2,20}$/">
+                <div class="error-message" ng-show="registrationForm.course.$dirty && registrationForm.course.$error.required">
+                    Course is required
+                </div>
+                <div class="error-message" ng-show="registrationForm.course.$dirty && registrationForm.course.$error.pattern">
+                    Course must contain only letters, numbers, spaces, and periods (2-20 characters)
+                </div>
+            </div>
+
+            <button type="submit" 
+                    class="btn" 
+                    ng-disabled="registrationForm.$invalid || registrationForm.$pristine || loading">
+                <span ng-if="!loading">Register</span>
+                <span ng-if="loading">Registering...</span>
+            </button>
+        </form>
+
+        <div class="links">
+            <a href="login.html">Already have an account? Login</a>
+            <a href="Home 1.html">Back to Home</a>
+        </div>
+    </div>
+
+    <script>
+        var app = angular.module('quizApp', []);
+
+        app.controller('RegistrationController', ['$scope', '$http', '$window', function($scope, $http, $window) {
+            $scope.user = {
+                username: '',
+                email: '',
+                password: '',
+                course: ''
+            };
+            $scope.loading = false;
+            $scope.errorMessage = '';
+            $scope.successMessage = '';
+
+            $scope.register = function() {
+                if ($scope.registrationForm.$valid) {
+                    $scope.loading = true;
+                    $scope.errorMessage = '';
+                    $scope.successMessage = '';
+
+                    $http.post('/api/register', $scope.user)
+                        .then(function(response) {
+                            $scope.successMessage = 'Registration successful!';
+                            // Redirect to login page after a short delay
+                            setTimeout(function() {
+                                $window.location.href = "login.html";
+                            }, 1000);
+                        })
+                        .catch(function(error) {
+                            $scope.errorMessage = error.data.error || 'An error occurred during registration';
+                        })
+                        .finally(function() {
+                            $scope.loading = false;
+                        });
+                }
+            };
+        }]);
+    </script>
+</body>
+</html>

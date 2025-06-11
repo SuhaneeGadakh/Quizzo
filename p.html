@@ -1,0 +1,88 @@
+<html ng-app="profileApp">
+<head>
+    <title>Profile Page</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <style>
+        body {
+            background-color: #87CEEB;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+
+        .container {
+            background: #F5F5DC;
+            width: 50%;
+            margin: auto;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px #4682B4;
+        }
+
+        h2 {
+            color: #4682B4;
+        }
+
+        input[type="text"] {
+            width: 80%;
+            padding: 5px;
+            margin: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        .button {
+            padding: 10px 20px;
+            background-color: #4682B4;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .button:hover {
+            background-color: #5A9BD5;
+        }
+    </style>
+</head>
+<body ng-controller="ProfileController">
+
+<div class="container">
+    <h2>User Profile</h2>
+
+    <p><strong>Name:</strong> <input type="text" ng-model="user.name" /></p>
+    <p><strong>Class:</strong> <input type="text" ng-model="user.class" /></p>
+    <p><strong>Branch:</strong> <input type="text" ng-model="user.branch" /></p>
+    <p><strong>Email:</strong> <input type="text" ng-model="user.email" /></p>
+    <p><strong>Phone:</strong> <input type="text" ng-model="user.phone" /></p>
+    
+    <br>
+    <button class="button" ng-click="saveProfile()">Save Profile</button>
+
+    <br><br>
+    <a href="Home 1.html">Go Back</a>
+</div>
+
+<script>
+    var app = angular.module('profileApp', []);
+    app.controller('ProfileController', function($scope) {
+        $scope.user = {
+            name: sessionStorage.getItem("userName") || '',
+            class: sessionStorage.getItem("userClass") || '',
+            branch: sessionStorage.getItem("userBranch") || '',
+            email: sessionStorage.getItem("userEmail") || '',
+            phone: sessionStorage.getItem("userPhone") || ''
+        };
+
+        $scope.saveProfile = function() {
+            sessionStorage.setItem("userName", $scope.user.name);
+            sessionStorage.setItem("userClass", $scope.user.class);
+            sessionStorage.setItem("userBranch", $scope.user.branch);
+            sessionStorage.setItem("userEmail", $scope.user.email);
+            sessionStorage.setItem("userPhone", $scope.user.phone);
+            alert("Profile saved successfully!");
+        };
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Theory of Computation Quiz</title>
+    <script src="header.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center;
+            background-color: #87CEEB; /* Sky Blue */
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(135deg, rgba(70, 130, 180, 0.85), rgba(90, 155, 213, 0.85));
+            padding: 15px 25px;
+            border-radius: 12px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            backdrop-filter: blur(5px);
+        }
+        .nav::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%);
+            pointer-events: none;
+        }
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            object-fit: contain;
+        }
+        .logo-text {
+            color: #F5F5DC;
+            font-size: 22px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            letter-spacing: 1px;
+        }
+        .nav-links {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .nav a {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 600;
+            padding: 8px 15px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 1;
+        }
+        .nav a:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .quiz-container {
+            background: #F5F5DC; /* Beige */
+            width: 80%;
+            max-width: 800px;
+            margin: auto;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(70, 130, 180, 0.3);
+            text-align: left;
+        }
+        .button {
+            background-color: #4682B4; /* Steel Blue */
+            color: white;
+            padding: 12px 20px;
+            text-decoration: none;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            display: inline-block;
+            margin: 10px 5px;
+            font-size: 16px;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+        .button:hover {
+            background-color: #5A9BD5;
+        }
+        .options button {
+            text-align: left;
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: 2px solid #4682B4;
+            border-radius: 8px;
+            cursor: pointer;
+            background: white;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        .options button:hover {
+            background-color: #f0f0f0;
+        }
+        .correct {
+            background-color: #9aeabc !important;
+        }
+        .incorrect {
+            background-color: #ff9393 !important;
+        }
+        .timer {
+            background-color: #4682B4;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            display: inline-block;
+            margin-bottom: 20px;
+            font-weight: 600;
+            font-size: 18px;
+        }
+        .timer.warning {
+            background-color: #ff9800;
+        }
+        .timer.danger {
+            background-color: #f44336;
+        }
+        h2 {
+            color: #4682B4;
+            margin-bottom: 20px;
+        }
+        #question {
+            font-size: 18px;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+        .result-container {
+            text-align: center;
+        }
+        .result-container h2 {
+            color: #4682B4;
+            margin-bottom: 20px;
+        }
+        .result-container p {
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+        .result-container .button {
+            margin: 10px;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background-color: #f0f0f0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        .progress-fill {
+            height: 100%;
+            background-color: #4682B4;
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+        #guest-message {
+            background: #F5F5DC;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(70, 130, 180, 0.3);
+            text-align: center;
+            margin: 20px auto;
+            max-width: 800px;
+        }
+        #guest-message h3 {
+            color: #4682B4;
+            margin-bottom: 15px;
+        }
+        #guest-message p {
+            font-size: 16px;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+        @media (max-width: 768px) {
+            .quiz-container {
+                width: 95%;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="quiz-content">
+            <!-- Quiz container will be inserted here by JavaScript -->
+        </div>
+    </div>
+    
+    <script>
+        let currentQuestionIndex = 0;
+        let correctCount = 0;
+        let wrongCount = 0;
+        let answered = false;
+        let timeLeft = 60; // 1 minute in seconds
+        let timerInterval;
+        let startTime;
+
+        const questions = [
+            { question: "1) What is a Turing Machine?", answers: ["A theoretical computing device", "A physical computer", "A programming language", "A database system"], correct: 0 },
+            { question: "2) Which of the following is a regular language?", answers: ["{a^n b^n | n ≥ 0}", "{a^n b^m | n, m ≥ 0}", "{a^n b^n c^n | n ≥ 0}", "None of these"], correct: 1 },
+            { question: "3) What is the halting problem?", answers: ["A problem that can be solved by any algorithm", "A problem that cannot be solved by any algorithm", "A problem that can only be solved by quantum computers", "A problem related to computer hardware"], correct: 1 },
+            { question: "4) Which of the following is a context-free language?", answers: ["{a^n b^n | n ≥ 0}", "{a^n b^n c^n | n ≥ 0}", "{a^n b^m | n, m ≥ 0}", "None of these"], correct: 0 },
+            { question: "5) What is P vs NP problem?", answers: ["A problem about computer hardware", "A problem about whether P = NP", "A problem about programming languages", "A problem about database systems"], correct: 1 },
+            { question: "6) What is a finite automaton?", answers: ["A theoretical model of computation", "A physical computer", "A programming language", "A database system"], correct: 0 },
+            { question: "7) Which of the following is a recursively enumerable language?", answers: ["{a^n b^n | n ≥ 0}", "{a^n b^n c^n | n ≥ 0}", "{a^n b^m | n, m ≥ 0}", "None of these"], correct: 1 },
+            { question: "8) What is the Church-Turing thesis?", answers: ["A thesis about computer hardware", "A thesis about whether P = NP", "A thesis about what can be computed", "A thesis about programming languages"], correct: 2 },
+            { question: "9) What is a context-sensitive language?", answers: ["A language that can be recognized by a finite automaton", "A language that can be recognized by a pushdown automaton", "A language that can be recognized by a linear-bounded automaton", "A language that can be recognized by a Turing machine"], correct: 2 },
+            { question: "10) What is the pumping lemma for regular languages?", answers: ["A lemma about context-free languages", "A lemma about regular languages", "A lemma about recursively enumerable languages", "A lemma about context-sensitive languages"], correct: 1 }
+        ];
+
+        window.onload = function() {
+            const userName = sessionStorage.getItem("userName");
+            const quizContent = document.getElementById("quiz-content");
+            
+            if (userName) {
+                // User is logged in
+                // Create and add quiz container for logged-in users
+                const quizContainer = document.createElement("div");
+                quizContainer.className = "quiz-container";
+                quizContainer.id = "quiz-container";
+                quizContainer.innerHTML = `
+                    <h2>Quizzo - Theory of Computer Science</h2>
+                    <div class="timer" id="timer">60</div>
+                    <p id="question"></p>
+                    <div class="options" id="options"></div>
+                    <button id="next-btn" class="button" onclick="nextQuestion()" disabled>Next</button>
+                `;
+                quizContent.appendChild(quizContainer);
+                
+                // Start the quiz for logged-in users
+                loadQuestion();
+                startTimer();
+            } else {
+                // User is a guest
+                // Create guest message
+                const guestMessage = document.createElement("div");
+                guestMessage.id = "guest-message";
+                guestMessage.innerHTML = `
+                    <h3>Welcome to Quizzo - Theory of Computer Science!</h3>
+                    <p>You need to be logged in to take this quiz. Please log in to track your progress and save your results.</p>
+                    <a href="login.html?redirect=tcs.html" class="button">Login</a>
+                    <a href="Home 1.html" class="button">Back to Home</a>
+                    <a href="Study material/TCS_study material.pdf" target="_blank" class="button">Study Material</a>
+                `;
+                quizContent.appendChild(guestMessage);
+            }
+        };
+
+        function startTimer() {
+            startTime = new Date();
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+
+        function updateTimer() {
+            timeLeft--;
+            const timerElement = document.getElementById("timer");
+            timerElement.textContent = timeLeft;
+            
+            // Change color based on time left
+            if (timeLeft <= 10) {
+                timerElement.classList.add("danger");
+            } else if (timeLeft <= 20) {
+                timerElement.classList.add("warning");
+            }
+            
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                endQuiz();
+            }
+        }
+
+        function loadQuestion() {
+            if (currentQuestionIndex >= questions.length) {
+                endQuiz();
+                return;
+            }
+            
+            answered = false;
+            document.getElementById("next-btn").disabled = true;
+
+            const q = questions[currentQuestionIndex];
+            document.getElementById("question").innerText = q.question;
+            const optionsContainer = document.getElementById("options");
+            optionsContainer.innerHTML = "";
+
+            q.answers.forEach((answer, index) => {
+                const button = document.createElement("button");
+                button.innerText = answer;
+                button.onclick = () => checkAnswer(button, index);
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function checkAnswer(button, option) {
+            if (answered) return;
+
+            answered = true;
+            const correctOption = questions[currentQuestionIndex].correct;
+
+            if (option === correctOption) {
+                button.classList.add("correct");
+                correctCount++;
+            } else {
+                button.classList.add("incorrect");
+                wrongCount++;
+            }
+            
+            document.getElementById("next-btn").disabled = false;
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            loadQuestion();
+        }
+
+        function endQuiz() {
+            clearInterval(timerInterval);
+            const endTime = new Date();
+            const timeTaken = Math.floor((endTime - startTime) / 1000);
+            
+            // Save quiz results to sessionStorage
+            saveQuizResults("tcs", correctCount, wrongCount, timeTaken);
+            
+            document.getElementById("quiz-container").innerHTML = `
+                <div class="result-container">
+                    <h2>Quizzo - Quiz Completed!</h2>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${(correctCount / questions.length) * 100}%"></div>
+                    </div>
+                    <p>Correct Answers: ${correctCount}</p>
+                    <p>Wrong Answers: ${wrongCount}</p>
+                    <p>Total Questions Attempted: ${correctCount + wrongCount}</p>
+                    <p>Time Taken: ${timeTaken} seconds</p>
+                    <button class='button' onclick='restartQuiz()'>Restart Quiz</button>
+                    <button class='button' onclick='goHome()'>Home</button>
+                    <a href="Study material/TCS_study material.pdf" class="button" target="_blank">Study Material</a>
+                    <a href="profile_2.html" class="button">View Profile & Progress</a>
+                </div>`;
+        }
+
+        function saveQuizResults(subject, correct, wrong, timeTaken) {
+            const totalQuestions = questions.length;
+            const score = Math.round((correct / totalQuestions) * 100);
+            const username = sessionStorage.getItem("userName");
+
+            if (!username) {
+                console.error("User not logged in. Cannot save results.");
+                return;
+            }
+
+            console.log("Saving quiz results for:", username, subject);
+
+            // Save to server
+            fetch('/api/quiz/results', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    username: username,
+                    subject: subject.toUpperCase(),
+                    score: score,
+                    totalQuestions: totalQuestions,
+                    correctAnswers: correct
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => Promise.reject(err));
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Quiz results saved successfully:', data);
+            })
+            .catch(error => {
+                console.error('Error saving quiz results:', error);
+                alert('Failed to save quiz results. Please try again.');
+            });
+
+            // Also save to session storage for local reference
+            const attemptsKey = `${subject}_attempts`;
+            let attempts = JSON.parse(sessionStorage.getItem(attemptsKey) || '[]');
+            
+            // Add new attempt
+            attempts.unshift({
+                date: new Date().toLocaleDateString(),
+                score: score,
+                totalQuestions: totalQuestions,
+                timeTaken: timeTaken,
+                correctAnswers: correct,
+                wrongAnswers: wrong
+            });
+            
+            // Keep only the last 10 attempts
+            if (attempts.length > 10) {
+                attempts = attempts.slice(0, 10);
+            }
+            
+            // Save to sessionStorage
+            sessionStorage.setItem(attemptsKey, JSON.stringify(attempts));
+        }
+
+        function restartQuiz() {
+            currentQuestionIndex = 0;
+            correctCount = 0;
+            wrongCount = 0;
+            timeLeft = 60;
+            
+            // Reset timer display
+            const timerElement = document.getElementById("timer");
+            timerElement.textContent = timeLeft;
+            timerElement.classList.remove("warning", "danger");
+
+            document.getElementById("quiz-container").innerHTML = `
+                <h2>Quizzo - Theory of Computer Science</h2>
+                <div class="timer" id="timer">60</div>
+                <p id="question"></p>
+                <div class="options" id="options"></div>
+                <button id="next-btn" class="button" onclick="nextQuestion()" disabled>Next</button>
+            `;
+
+            loadQuestion();
+            startTimer();
+        }
+
+        function goHome() {
+            window.location.href = "Home 1.html";
+        }
+    </script>
+</body>
+</html> 

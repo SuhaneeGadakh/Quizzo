@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Analysis</title>
+    <script src="header.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #87CEEB;
+        }
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        .analysis-container {
+            background: #F5F5DC;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(70, 130, 180, 0.3);
+        }
+        .subject-analysis {
+            margin-bottom: 30px;
+            background: #F0F8FF;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(70, 130, 180, 0.1);
+            animation: fadeIn 0.5s ease-out forwards;
+            opacity: 0;
+        }
+        .subject-analysis:nth-child(1) { animation-delay: 0.1s; }
+        .subject-analysis:nth-child(2) { animation-delay: 0.2s; }
+        .subject-analysis:nth-child(3) { animation-delay: 0.3s; }
+        .subject-analysis:nth-child(4) { animation-delay: 0.4s; }
+        .subject-analysis:nth-child(5) { animation-delay: 0.5s; }
+        .subject-analysis:nth-child(6) { animation-delay: 0.6s; }
+        
+        .subject-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #4682B4;
+        }
+        .subject-name {
+            font-size: 1.4em;
+            color: #4682B4;
+            font-weight: bold;
+        }
+        .accuracy {
+            font-size: 1.2em;
+            color: #4682B4;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .stat-box {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        .stat-box:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .stat-value {
+            font-size: 1.8em;
+            color: #4682B4;
+            font-weight: bold;
+            margin: 5px 0;
+        }
+        .stat-label {
+            color: #666;
+            font-size: 0.9em;
+        }
+        .progress-bar {
+            height: 12px;
+            background: #ddd;
+            border-radius: 6px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+        .progress-fill {
+            height: 100%;
+            background: #4682B4;
+            border-radius: 6px;
+            transition: width 0.8s ease;
+        }
+        .error-message {
+            text-align: center;
+            color: #666;
+            padding: 20px;
+            font-style: italic;
+        }
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+        }
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #4682B4;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 2s linear infinite;
+            margin-right: 10px;
+        }
+        .button {
+            background-color: #4682B4;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            margin: 10px 5px;
+            display: inline-block;
+            transition: background-color 0.3s ease;
+        }
+        .button:hover {
+            background-color: #5A9BD5;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="analysis-container">
+            <h2 style="color: #4682B4; text-align: center; margin-bottom: 30px;">Quiz Performance Analysis</h2>
+            <div id="analysisContent">
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                    <span>Loading analysis data...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const userName = sessionStorage.getItem("userName");
+            if (!userName) {
+                window.location.href = "login.html?redirect=quiz_analysis.html";
+                return;
+            }
+            loadAnalytics();
+        });
+
+        function loadAnalytics() {
+            const userName = sessionStorage.getItem("userName");
+            console.log("Loading analytics for:", userName);
+            
+            document.getElementById('analysisContent').innerHTML = `
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                    <span>Loading analysis data...</span>
+                </div>
+            `;
+            
+            fetch(`/api/quiz/analysis/${userName}`)
+                .then(response => {
+                    if (!response.ok) {
+                        if (response.status === 404) {
+                            throw new Error(`User not found`);
+                        } else if (response.status === 500) {
+                            return response.json().then(data => {
+                                throw new Error(`Server error: ${data.details || 'Unknown error'}`);
+                            });
+                        } else {
+                            throw new Error(`HTTP error: ${response.status}`);
+                        }
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Analytics data:', data); // Debug log
+                    
+                    // Check if we actually got valid data
+                    if (!data || data.length === 0) {
+                        console.log('No analytics data returned, falling back to quiz results');
+                        return fetchAndDisplayQuizResults(userName);
+                    }
+                    
+                    // Validate data structure
+                    const hasValidStructure = data.every(item => 
+                        item && typeof item === 'object' && 'subject' in item
+                    );
+                    
+                    if (!hasValidStructure) {
+                        console.warn('Analytics data has invalid structure:', data);
+                        return fetchAndDisplayQuizResults(userName);
+                    }
+                    
+                    displayAnalysis(data);
+                })
+                .catch(error => {
+                    console.error('Error loading analytics:', error);
+                    
+                    // Fallback to direct quiz results
+                    console.log('Falling back to direct quiz results due to error:', error.message);
+                    fetchAndDisplayQuizResults(userName);
+                });
+        }
+
+        function fetchAndDisplayQuizResults(userName) {
+            console.log("Fetching direct quiz results for:", userName);
+            
+            fetch(`/api/quiz/results/all?username=${userName}`)
+                .then(response => {
+                    if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Fetched direct quiz results:', data);
+                    
+                    if (!data || data.length === 0) {
+                        document.getElementById('analysisContent').innerHTML = `
+                            <div class="error-message">
+                                No quiz data available yet. Take some quizzes to see your analysis!<br><br>
+                                <button onclick="window.location.href='dsa.html'" class="button">Take DSA Quiz</button>
+                                <button onclick="window.location.href='Home 1.html'" class="button">Go to Home</button>
+                            </div>
+                        `;
+                        return;
+                    }
+                    
+                    // Convert quiz results to analysis format
+                    const subjects = {};
+                    data.forEach(quiz => {
+                        if (!quiz || !quiz.subject) {
+                            console.warn('Invalid quiz data found:', quiz);
+                            return; // Skip invalid entries
+                        }
+                        
+                        const subject = quiz.subject;
+                        if (!subjects[subject]) {
+                            subjects[subject] = {
+                                subject: subject,
+                                total_attempts: 0,
+                                total_correct: 0,
+                                total_questions: 0,
+                                last_attempt: quiz.created_at || new Date().toISOString()
+                            };
+                        }
+                        
+                        // Use correct field names and ensure they're numbers
+                        const correctAnswers = parseInt(quiz.correct_answers) || 0;
+                        const totalQuestions = parseInt(quiz.total_questions) || 0;
+                        
+                        subjects[subject].total_attempts += 1;
+                        subjects[subject].total_correct += correctAnswers;
+                        subjects[subject].total_questions += totalQuestions;
+                        
+                        // Update last_attempt if this quiz is more recent
+                        const quizDate = new Date(quiz.created_at || 0);
+                        const currentLastAttempt = new Date(subjects[subject].last_attempt || 0);
+                        if (quizDate > currentLastAttempt) {
+                            subjects[subject].last_attempt = quiz.created_at;
+                        }
+                    });
+                    
+                    // Calculate accuracy for each subject
+                    const analysisData = Object.values(subjects).map(subject => {
+                        // Ensure we don't divide by zero
+                        const accuracy = subject.total_questions > 0 
+                            ? (subject.total_correct / subject.total_questions) * 100 
+                            : 0;
+                        
+                        return {
+                            ...subject,
+                            accuracy: accuracy
+                        };
+                    });
+                    
+                    console.log('Processed analysis data:', analysisData);
+                    displayAnalysis(analysisData);
+                })
+                .catch(error => {
+                    console.error('Error fetching direct quiz results:', error);
+                    document.getElementById('analysisContent').innerHTML = `
+                        <div class="error-message">
+                            Unable to load quiz data. Please try again later.<br>
+                            Error: ${error.message}<br><br>
+                            <button onclick="loadAnalytics()" class="button">Retry</button>
+                            <button onclick="window.location.href='Home 1.html'" class="button">Go to Home</button>
+                        </div>
+                    `;
+                });
+        }
+
+        function displayAnalysis(data) {
+            console.log('Displaying analysis:', data); // Debug log
+            const container = document.getElementById('analysisContent');
+            
+            if (!data || data.length === 0) {
+                container.innerHTML = 
+                    '<div class="error-message">No quiz data available yet. Take some quizzes to see your analysis!</div>';
+                return;
+            }
+
+            let analysisHTML = '';
+            data.forEach(subject => {
+                const totalAttempts = subject.total_attempts || 0;
+                const totalCorrect = subject.total_correct || 0;
+                const totalQuestions = subject.total_questions || 0;
+                // Ensure accuracy is a valid number
+                const accuracy = typeof subject.accuracy === 'number' ? subject.accuracy : 
+                    (totalQuestions > 0 ? (totalCorrect / totalQuestions) * 100 : 0);
+                const lastAttempt = subject.last_attempt ? new Date(subject.last_attempt).toLocaleDateString() : 'N/A';
+                
+                analysisHTML += `
+                    <div class="subject-analysis">
+                        <div class="subject-header">
+                            <div class="subject-name">${subject.subject}</div>
+                            <div class="accuracy">${accuracy.toFixed(1)}% Accuracy</div>
+                        </div>
+                        <div class="stats-grid">
+                            <div class="stat-box">
+                                <div class="stat-value">${totalAttempts}</div>
+                                <div class="stat-label">Total Attempts</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-value">${totalCorrect}</div>
+                                <div class="stat-label">Correct Answers</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-value">${totalQuestions}</div>
+                                <div class="stat-label">Total Questions</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-value">${lastAttempt}</div>
+                                <div class="stat-label">Last Attempt</div>
+                            </div>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = analysisHTML;
+            
+            // Animate progress bars after they're added to the DOM
+            setTimeout(() => {
+                document.querySelectorAll('.progress-fill').forEach((bar, index) => {
+                    const accuracy = typeof data[index].accuracy === 'number' ? data[index].accuracy : 
+                        (data[index].total_questions > 0 ? (data[index].total_correct / data[index].total_questions) * 100 : 0);
+                    bar.style.width = `${accuracy}%`;
+                });
+            }, 100);
+        }
+    </script>
+</body>
+</html> 

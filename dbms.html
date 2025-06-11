@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quizzo - DBMS Quiz</title>
+    <script src="header.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center;
+            background-color: #87CEEB; /* Sky Blue */
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(135deg, rgba(70, 130, 180, 0.85), rgba(90, 155, 213, 0.85));
+            padding: 15px 25px;
+            border-radius: 12px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            backdrop-filter: blur(5px);
+        }
+        .nav::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%);
+            pointer-events: none;
+        }
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            object-fit: contain;
+        }
+        .logo-text {
+            color: #F5F5DC;
+            font-size: 22px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            letter-spacing: 1px;
+        }
+        .nav-links {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .nav a {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 600;
+            padding: 8px 15px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 1;
+        }
+        .nav a:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .quiz-container {
+            background: #F5F5DC; /* Beige */
+            width: 80%;
+            max-width: 800px;
+            margin: auto;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(70, 130, 180, 0.3);
+            text-align: left;
+        }
+        .button {
+            background-color: #4682B4; /* Steel Blue */
+            color: white;
+            padding: 12px 20px;
+            text-decoration: none;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            display: inline-block;
+            margin: 10px 5px;
+            font-size: 16px;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+        .button:hover {
+            background-color: #5A9BD5;
+        }
+        .options button {
+            text-align: left;
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: 2px solid #4682B4;
+            border-radius: 8px;
+            cursor: pointer;
+            background: white;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        .options button:hover {
+            background-color: #f0f0f0;
+        }
+        .correct {
+            background-color: #9aeabc !important;
+        }
+        .incorrect {
+            background-color: #ff9393 !important;
+        }
+        .timer {
+            background-color: #4682B4;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            display: inline-block;
+            margin-bottom: 20px;
+            font-weight: 600;
+            font-size: 18px;
+        }
+        .timer.warning {
+            background-color: #ff9800;
+        }
+        .timer.danger {
+            background-color: #f44336;
+        }
+        h2 {
+            color: #4682B4;
+            margin-bottom: 20px;
+        }
+        #question {
+            font-size: 18px;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+        .result-container {
+            text-align: center;
+        }
+        .result-container h2 {
+            color: #4682B4;
+            margin-bottom: 20px;
+        }
+        .result-container p {
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+        .result-container .button {
+            margin: 10px;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background-color: #f0f0f0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        .progress-fill {
+            height: 100%;
+            background-color: #4682B4;
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+        #guest-message {
+            background: #F5F5DC;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(70, 130, 180, 0.3);
+            text-align: center;
+            margin: 20px auto;
+            max-width: 800px;
+        }
+        #guest-message h3 {
+            color: #4682B4;
+            margin-bottom: 15px;
+        }
+        #guest-message p {
+            font-size: 16px;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+        @media (max-width: 768px) {
+            .quiz-container {
+                width: 95%;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="nav">
+            <div class="logo-container">
+                <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNDAgMjQwIj48cGF0aCBmaWxsPSIjNUE5QkQ1IiBkPSJNMTIwLDE4MGMzMy4xLDAsNjAtMjYuOSw2MC02MGMwLTMzLjEtMjYuOS02MC02MC02MGMtMzMuMSwwLTYwLDI2LjktNjAsNjBDNjAsMTUzLjEsODYuOSwxODAsMTIwLDE4MHoiLz48cGF0aCBmaWxsPSIjRjVGNURDIiBkPSJNMTcwLDcwYzAsMjcuNi0yMi40LDUwLTUwLDUwcy01MC0yMi40LTUwLTUwYzAtMjcuNiwyMi40LTUwLDUwLTUwUzE3MCw0Mi40LDE3MCw3MHoiLz48cGF0aCBmaWxsPSIjYWRmZjJmIiBkPSJNNTUsMTYwYzAsMCwxMC0zMyw2NS0zM2M1NSwwLDY1LDMzLDY1LDMzcy0xMCwyNS02NSwyNUM2NSwxODUsNTUsMTYwLDU1LDE2MHoiLz48dGV4dCB4PSI4MCIgeT0iMTUyIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iNDgiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSIjNDY4MkI0Ij5RPC90ZXh0Pjwvc3ZnPg==" alt="Quizzo Logo" class="logo">
+                <span class="logo-text">QUIZZO</span>
+            </div>
+            <div class="nav-links">
+                <a href="Home 1.html">Home</a>
+                <a href="Study material/study_material.html">Study Material</a>
+                <a href="profile_2.html" id="profileLink">Profile</a>
+                <a href="login.html" id="loginButton">Login</a>
+                <a href="#" id="logoutButton" style="display: none;">Logout</a>
+            </div>
+        </div>
+
+        <div id="quiz-content">
+            <!-- Quiz container will be inserted here by JavaScript -->
+        </div>
+    </div>
+    
+    <script>
+        let currentQuestionIndex = 0;
+        let correctCount = 0;
+        let wrongCount = 0;
+        let answered = false;
+        let timeLeft = 60; // 1 minute in seconds
+        let timerInterval;
+        let startTime;
+
+        const questions = [
+            { question: "1) Which of the following is not a type of database model?", answers: ["Relational", "Network", "Object-Oriented", "Functional"], correct: 3 },
+            { question: "2) What does SQL stand for?", answers: ["Structured Query Language", "Sequential Query Language", "Simple Query Language", "Standard Query Language"], correct: 0 },
+            { question: "3) What is a foreign key?", answers: ["A key used to encrypt data", "A key that can access any table", "A field that links two tables", "A primary key in a foreign database"], correct: 2 },
+            { question: "4) What is normalization in database design?", answers: ["Process of organizing data to reduce redundancy", "Converting database to a single table", "Optimizing SQL queries", "Encrypting database for security"], correct: 0 },
+            { question: "5) Which normal form deals with transitive dependencies?", answers: ["First Normal Form (1NF)", "Second Normal Form (2NF)", "Third Normal Form (3NF)", "Boyce-Codd Normal Form (BCNF)"], correct: 2 },
+            { question: "6) What is a deadlock in database systems?", answers: ["When a transaction is forced to wait indefinitely", "When a database crashes", "When a query returns no results", "When a table has no records"], correct: 0 },
+            { question: "7) What is ACID in the context of database transactions?", answers: ["A database encryption method", "A set of properties (Atomicity, Consistency, Isolation, Durability)", "A type of SQL query", "An advanced indexing technique"], correct: 1 },
+            { question: "8) Which of the following is not a type of SQL command?", answers: ["DDL (Data Definition Language)", "DML (Data Manipulation Language)", "DCL (Data Control Language)", "DPL (Data Processing Language)"], correct: 3 },
+            { question: "9) What does the SQL command 'GROUP BY' do?", answers: ["Filters records", "Sorts records", "Groups rows with same values", "Joins tables"], correct: 2 },
+            { question: "10) What is a stored procedure in a database?", answers: ["A way to store data", "A precompiled set of SQL statements", "A backup of the database", "A method to encrypt sensitive data"], correct: 1 }
+        ];
+
+        window.onload = function() {
+            const userName = sessionStorage.getItem("userName");
+            const loginButton = document.getElementById("loginButton");
+            const logoutButton = document.getElementById("logoutButton");
+            const profileLink = document.getElementById("profileLink");
+            const quizContent = document.getElementById("quiz-content");
+            
+            if (userName) {
+                // User is logged in
+                loginButton.style.display = "none";
+                logoutButton.style.display = "inline-block";
+                
+                // Create and add quiz container for logged-in users
+                const quizContainer = document.createElement("div");
+                quizContainer.className = "quiz-container";
+                quizContainer.id = "quiz-container";
+                quizContainer.innerHTML = `
+                    <h2>Quizzo - Database Management Systems</h2>
+                    <div class="timer" id="timer">60</div>
+                    <p id="question"></p>
+                    <div class="options" id="options"></div>
+                    <button id="next-btn" class="button" onclick="nextQuestion()" disabled>Next</button>
+                `;
+                quizContent.appendChild(quizContainer);
+                
+                // Start the quiz for logged-in users
+                loadQuestion();
+                startTimer();
+            } else {
+                // User is a guest
+                loginButton.style.display = "inline-block";
+                logoutButton.style.display = "none";
+                
+                // Create guest message
+                const guestMessage = document.createElement("div");
+                guestMessage.id = "guest-message";
+                guestMessage.innerHTML = `
+                    <h3>Welcome to Quizzo - Database Management Systems!</h3>
+                    <p>You need to be logged in to take this quiz. Please log in to track your progress and save your results.</p>
+                    <a href="login.html?redirect=dbms.html" class="button">Login</a>
+                    <a href="Home 1.html" class="button">Back to Home</a>
+                    <a href="Study material/DBMS_study material.pdf" target="_blank" class="button">Study Material</a>
+                `;
+                quizContent.appendChild(guestMessage);
+                
+                // Redirect to login page when clicking profile
+                profileLink.addEventListener("click", function(e) {
+                    e.preventDefault();
+                    window.location.href = "login.html?redirect=profile_2.html";
+                });
+            }
+            
+            // Logout functionality
+            logoutButton.addEventListener("click", function(e) {
+                e.preventDefault();
+                sessionStorage.clear();
+                window.location.href = "Home 1.html";
+            });
+        };
+
+        function startTimer() {
+            startTime = new Date();
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+
+        function updateTimer() {
+            timeLeft--;
+            const timerElement = document.getElementById("timer");
+            timerElement.textContent = timeLeft;
+            
+            // Change color based on time left
+            if (timeLeft <= 10) {
+                timerElement.classList.add("danger");
+            } else if (timeLeft <= 20) {
+                timerElement.classList.add("warning");
+            }
+            
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                endQuiz();
+            }
+        }
+
+        function loadQuestion() {
+            if (currentQuestionIndex >= questions.length) {
+                endQuiz();
+                return;
+            }
+            
+            answered = false;
+            document.getElementById("next-btn").disabled = true;
+
+            const q = questions[currentQuestionIndex];
+            document.getElementById("question").innerText = q.question;
+            const optionsContainer = document.getElementById("options");
+            optionsContainer.innerHTML = "";
+
+            q.answers.forEach((answer, index) => {
+                const button = document.createElement("button");
+                button.innerText = answer;
+                button.onclick = () => checkAnswer(button, index);
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function checkAnswer(button, option) {
+            if (answered) return;
+
+            answered = true;
+            const correctOption = questions[currentQuestionIndex].correct;
+
+            if (option === correctOption) {
+                button.classList.add("correct");
+                correctCount++;
+            } else {
+                button.classList.add("incorrect");
+                wrongCount++;
+            }
+            
+            document.getElementById("next-btn").disabled = false;
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            loadQuestion();
+        }
+
+        function saveQuizResults(subject, correct, wrong, timeTaken) {
+            const totalQuestions = questions.length;
+            const score = Math.round((correct / totalQuestions) * 100);
+            const username = sessionStorage.getItem("userName");
+
+            if (!username) {
+                console.error("User not logged in. Cannot save results.");
+                return;
+            }
+
+            console.log("Saving quiz results for:", username, subject);
+
+            // Save to server
+            fetch('/api/quiz/results', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    username: username,
+                    subject: subject.toUpperCase(),
+                    score: score,
+                    totalQuestions: totalQuestions,
+                    correctAnswers: correct
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => Promise.reject(err));
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Quiz results saved successfully:', data);
+            })
+            .catch(error => {
+                console.error('Error saving quiz results:', error);
+                alert('Failed to save quiz results. Please try again.');
+            });
+
+            // Also save to session storage for local reference
+            const attemptsKey = `${subject}_attempts`;
+            let attempts = JSON.parse(sessionStorage.getItem(attemptsKey) || '[]');
+            
+            // Add new attempt
+            attempts.unshift({
+                date: new Date().toLocaleDateString(),
+                score: score,
+                totalQuestions: totalQuestions,
+                timeTaken: timeTaken,
+                correctAnswers: correct,
+                wrongAnswers: wrong
+            });
+            
+            // Keep only the last 10 attempts
+            if (attempts.length > 10) {
+                attempts = attempts.slice(0, 10);
+            }
+            
+            // Save to sessionStorage
+            sessionStorage.setItem(attemptsKey, JSON.stringify(attempts));
+        }
+
+        function endQuiz() {
+            clearInterval(timerInterval);
+            const endTime = new Date();
+            const timeTaken = Math.floor((endTime - startTime) / 1000);
+            
+            // Save quiz results
+            saveQuizResults("DBMS", correctCount, wrongCount, timeTaken);
+            
+            document.getElementById("quiz-container").innerHTML = `
+                <div class="result-container">
+                    <h2>Quizzo - Quiz Completed!</h2>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${(correctCount / questions.length) * 100}%"></div>
+                    </div>
+                    <p>Correct Answers: ${correctCount}</p>
+                    <p>Wrong Answers: ${wrongCount}</p>
+                    <p>Total Questions Attempted: ${correctCount + wrongCount}</p>
+                    <p>Time Taken: ${timeTaken} seconds</p>
+                    <button class='button' onclick='restartQuiz()'>Restart Quiz</button>
+                    <button class='button' onclick='goHome()'>Home</button>
+                    <a href="Study material/DBMS_study material.pdf" class="button" target="_blank">Study Material</a>
+                    <a href="profile_2.html" class="button">View Profile & Progress</a>
+                    <a href="quiz_analysis.html" class="button">View Analysis</a>
+                </div>`;
+        }
+
+        function restartQuiz() {
+            currentQuestionIndex = 0;
+            correctCount = 0;
+            wrongCount = 0;
+            timeLeft = 60;
+            
+            // Reset timer display
+            const timerElement = document.getElementById("timer");
+            timerElement.textContent = timeLeft;
+            timerElement.classList.remove("warning", "danger");
+
+            document.getElementById("quiz-container").innerHTML = `
+                <h2>Quizzo - Database Management Systems</h2>
+                <div class="timer" id="timer">60</div>
+                <p id="question"></p>
+                <div class="options" id="options"></div>
+                <button id="next-btn" class="button" onclick="nextQuestion()" disabled>Next</button>
+            `;
+
+            loadQuestion();
+            startTimer();
+        }
+
+        function goHome() {
+            window.location.href = "Home 1.html";
+        }
+    </script>
+</body>
+</html> 
